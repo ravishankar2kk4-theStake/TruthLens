@@ -81,16 +81,18 @@ st.markdown("""
 .info-box {
     padding: 20px;
     border-radius: 12px;
-    background-color: #eff6ff;
-    border-left: 5px solid #3b82f6;
+    background-color: #e0f2fe;
+    border-left: 5px solid #2563eb;
+    color: #111827;
     margin: 15px 0;
 }
 
 .warning-box {
     padding: 20px;
     border-radius: 12px;
-    background-color: #fff7ed;
-    border-left: 5px solid #f97316;
+    background-color: #ffedd5;
+    border-left: 5px solid #ea580c;
+    color: #111827;
     margin: 15px 0;
 }
 
@@ -99,6 +101,129 @@ st.markdown("""
     color: #64748b;
     padding: 30px 0 10px 0;
     font-size: 14px;
+}
+
+
+/* Ensure lower-page content remains visible on light backgrounds */
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] strong,
+[data-testid="stMarkdownContainer"] h1,
+[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3,
+[data-testid="stMarkdownContainer"] h4 {
+    color: #111827 !important;
+}
+
+.footer {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    color: #374151 !important;
+    padding: 22px 15px 18px 15px;
+    margin-top: 30px;
+}
+
+.footer br + * {
+    color: #374151 !important;
+}
+
+
+/* Global visibility fix */
+.stApp, .main, .block-container {
+    background-color: #f8fafc !important;
+}
+
+[data-testid="stMarkdownContainer"] {
+    color: #111827 !important;
+}
+
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] span,
+[data-testid="stMarkdownContainer"] strong,
+[data-testid="stMarkdownContainer"] em {
+    color: #111827 !important;
+}
+
+[data-testid="stMarkdownContainer"] h1,
+[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3,
+[data-testid="stMarkdownContainer"] h4,
+[data-testid="stMarkdownContainer"] h5,
+[data-testid="stMarkdownContainer"] h6 {
+    color: #111827 !important;
+}
+
+.stTextInput label,
+.stTextArea label,
+.stSelectbox label,
+.stRadio label,
+.stButton label {
+    color: #111827 !important;
+}
+
+div[data-testid="stMetric"] {
+    background-color: #ffffff !important;
+    border: 1px solid #dbe3ef !important;
+    border-radius: 14px !important;
+}
+
+div[data-testid="stMetric"] * {
+    color: #111827 !important;
+}
+
+div[data-testid="stDataFrame"] {
+    color: #111827 !important;
+}
+
+.stAlert {
+    color: #111827 !important;
+}
+
+footer {
+    visibility: hidden;
+}
+
+.footer {
+    background-color: #ffffff !important;
+    border: 1px solid #dbe3ef !important;
+    border-radius: 14px !important;
+    color: #374151 !important;
+    padding: 22px !important;
+    margin-top: 30px !important;
+    text-align: center !important;
+}
+
+.footer * {
+    color: #374151 !important;
+}
+
+
+/* Sidebar visibility */
+section[data-testid="stSidebar"] {
+    background-color: #111827 !important;
+}
+
+section[data-testid="stSidebar"] * {
+    color: #ffffff !important;
+}
+
+section[data-testid="stSidebar"] .stMarkdown p,
+section[data-testid="stSidebar"] .stMarkdown span {
+    color: #ffffff !important;
+}
+
+section[data-testid="stSidebar"] hr {
+    border-color: #374151 !important;
+}
+
+
+/* Prevent lower content from being visually clipped */
+.main .block-container {
+    min-height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 5rem !important;
 }
 
 </style>
@@ -160,51 +285,19 @@ f1 = get_metric(
 
 
 # ============================================================
-# LOAD DATASET
+# DATASET STATISTICS
 # ============================================================
+# The original training dataset is kept offline because the CSV files
+# are too large for a simple GitHub browser upload. The deployed app
+# only needs the trained model/vectorizer/metrics files for prediction.
 
-@st.cache_data
-def load_dataset():
-
-    fake_df = pd.read_csv("dataset/Fake.csv")
-    real_df = pd.read_csv("dataset/True.csv")
-
-    fake_df["label"] = "FAKE"
-    real_df["label"] = "REAL"
-
-    df = pd.concat(
-        [fake_df, real_df],
-        ignore_index=True
-    )
-
-    return df
-
-
-df = load_dataset()
-
-
-# ============================================================
-# GLOBAL DATASET STATISTICS
-# ============================================================
-
-total_articles = len(df)
-
-fake_articles = len(
-    df[df["label"] == "FAKE"]
-)
-
-real_articles = len(
-    df[df["label"] == "REAL"]
-)
+total_articles = 44898
+fake_articles = 23481
+real_articles = 21417
 
 # Original training used an 80/20 split
-training_size = int(
-    total_articles * 0.80
-)
-
-testing_size = (
-    total_articles - training_size
-)
+training_size = 35918
+testing_size = 8980
 
 
 # ============================================================
@@ -661,11 +754,33 @@ if page == "🏠 Dashboard":
 
     st.markdown(
         """
-        <div class="info-box">
-        <b>Disclaimer:</b> TruthLens is an educational machine
-        learning project. Predictions are based on patterns learned
-        from the training dataset and should not be treated as
-        definitive fact-checking.
+        <div style="
+            background:#e0f2fe;
+            border:1px solid #93c5fd;
+            border-left:6px solid #2563eb;
+            border-radius:14px;
+            padding:20px 22px;
+            margin:20px 0;
+            color:#111827;
+        ">
+            <div style="
+                font-size:18px;
+                font-weight:800;
+                color:#111827;
+                margin-bottom:8px;
+            ">
+                ⚠️ Disclaimer
+            </div>
+            <div style="
+                font-size:15px;
+                line-height:1.65;
+                color:#374151;
+            ">
+                TruthLens is an educational machine learning project.
+                Predictions are based on patterns learned from the
+                training dataset and should not be treated as definitive
+                fact-checking.
+            </div>
         </div>
         """,
         unsafe_allow_html=True
@@ -858,7 +973,7 @@ elif page == "📈 Dataset Analytics":
 
     st.markdown(
         '<div class="subtitle">'
-        'Explore the dataset used to train the model.'
+        'Explore statistics from the dataset used to train the model.'
         '</div>',
         unsafe_allow_html=True
     )
@@ -971,18 +1086,33 @@ elif page == "📈 Dataset Analytics":
         "👀 Dataset Preview"
     )
 
-    preview_columns = [
-        col for col in [
-            "title",
-            "text",
-            "label"
+    st.info(
+        "The full CSV dataset is kept offline and is not bundled with "
+        "the deployed Streamlit app. The statistics above come from "
+        "the dataset used during model training."
+    )
+
+    preview_df = pd.DataFrame({
+        "Dataset Information": [
+            "Total articles",
+            "Fake articles",
+            "Real articles",
+            "Training articles",
+            "Testing articles"
+        ],
+        "Value": [
+            f"{total_articles:,}",
+            f"{fake_articles:,}",
+            f"{real_articles:,}",
+            f"{training_size:,}",
+            f"{testing_size:,}"
         ]
-        if col in df.columns
-    ]
+    })
 
     st.dataframe(
-        df[preview_columns].head(10),
-        use_container_width=True
+        preview_df,
+        use_container_width=True,
+        hide_index=True
     )
 
 
@@ -1317,9 +1447,30 @@ elif page == "ℹ️ About Project":
 
     st.markdown(
         """
-        <div class="info-box">
-        <b>TruthLens</b><br>
-        AI-Powered Fake News Detection Dashboard
+        <div style="
+            background:#ffffff;
+            border:1px solid #dbe3ef;
+            border-left:6px solid #2563eb;
+            border-radius:14px;
+            padding:22px 24px;
+            margin-top:20px;
+            color:#111827;
+        ">
+            <div style="
+                font-size:22px;
+                font-weight:800;
+                color:#111827;
+                margin-bottom:8px;
+            ">
+                TruthLens
+            </div>
+            <div style="
+                font-size:15px;
+                color:#374151;
+                line-height:1.6;
+            ">
+                AI-Powered Fake News Detection Dashboard
+            </div>
         </div>
         """,
         unsafe_allow_html=True
