@@ -1,8 +1,56 @@
+Continued from Upgrade News Dashboard (5)
+
+Pasted code(2).py
+Python
+
+You're welcome! 😄
+
+TruthLens is now in a really solid place. 🚀
+If you want to continue later, we can work on things like:
+
+🌐 Making the deployed dashboard more professional
+🤖 Improving the fake-news model
+📊 Adding more analytics
+🔍 Making the XAI explanation even better
+🎨 Improving the UI/animations
+📱 Making it mobile-friendly
+📝 Preparing your final-year project report
+🎤 Preparing your project viva/presentation
+
+Good luck with TruthLens! 🔥
+
+can you give the first first updated github app.py coding
+
+Yes. If by “the first updated GitHub app.py” you mean the first deployment-ready version we made for the TruthLens GitHub/Streamlit deployment—before the later visibility fixes—I can give you the complete code.
+
+I’ll base it on the version we were using for your project, including:
+
+TruthLens dashboard
+News Analyzer
+Dataset Analytics
+Model Information
+About Project
+XAI word explanations
+Prediction probability
+Accuracy / Precision / Recall / F1
+Confusion matrix
+Training vs testing information
+GitHub/Streamlit deployment compatibility
+No dependency on dataset/Fake.csv or dataset/True.csv, so it won't produce the deployment FileNotFoundError
+
+If you want that exact first updated version, say “yes” and I’ll give you the complete app.py in one code block.
+
+yes
+
+Absolutely. Here is the first deployment-ready app.py version we prepared for the GitHub/Streamlit version of TruthLens.
+
+It does not load dataset/Fake.csv or dataset/True.csv, so it avoids the GitHub deployment FileNotFoundError.
 
 import streamlit as st
 import pandas as pd
 import joblib
-import plotly.express as px
+import os
+from sklearn.metrics import confusion_matrix
 
 
 # ============================================================
@@ -10,8 +58,8 @@ import plotly.express as px
 # ============================================================
 
 st.set_page_config(
-    page_title="TruthLens - Fake News Detector",
-    page_icon="📰",
+    page_title="TruthLens",
+    page_icon="🔎",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -24,206 +72,91 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.main {
+.stApp {
     background-color: #f8fafc;
 }
 
-.block-container {
+.main .block-container {
     padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-bottom: 3rem;
 }
 
-.main-title {
-    font-size: 42px;
-    font-weight: 700;
-    margin-bottom: 5px;
+h1, h2, h3, h4, h5, h6 {
+    color: #111827 !important;
 }
 
-.subtitle {
-    font-size: 18px;
-    color: #64748b;
-    margin-bottom: 25px;
+p {
+    color: #374151;
 }
 
-.section-title {
-    font-size: 26px;
-    font-weight: 650;
-    margin-top: 20px;
-    margin-bottom: 15px;
+textarea {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+    border-radius: 10px !important;
 }
 
-.result-real {
-    padding: 25px;
-    border-radius: 15px;
-    background-color: #dcfce7;
-    border: 1px solid #86efac;
-    text-align: center;
+div[data-testid="stMetric"] {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.result-fake {
-    padding: 25px;
-    border-radius: 15px;
-    background-color: #fee2e2;
-    border: 1px solid #fca5a5;
-    text-align: center;
+[data-testid="stMetricLabel"] {
+    color: #4b5563 !important;
+    font-weight: 600;
 }
 
-.result-title {
-    font-size: 32px;
-    font-weight: 700;
-}
-
-.result-subtitle {
-    font-size: 16px;
-    margin-top: 8px;
+[data-testid="stMetricValue"] {
+    color: #111827 !important;
+    font-weight: 800;
 }
 
 .info-box {
-    padding: 20px;
-    border-radius: 12px;
-    background-color: #e0f2fe;
+    background-color: #ffffff;
     border-left: 5px solid #2563eb;
+    padding: 18px;
+    border-radius: 10px;
+    margin: 10px 0;
     color: #111827;
-    margin: 15px 0;
 }
 
 .warning-box {
-    padding: 20px;
-    border-radius: 12px;
-    background-color: #ffedd5;
-    border-left: 5px solid #ea580c;
+    background-color: #fff7ed;
+    border-left: 5px solid #f97316;
+    padding: 18px;
+    border-radius: 10px;
+    margin: 10px 0;
     color: #111827;
-    margin: 15px 0;
 }
 
-.footer {
-    text-align: center;
-    color: #64748b;
-    padding: 30px 0 10px 0;
-    font-size: 14px;
+.success-box {
+    background-color: #f0fdf4;
+    border-left: 5px solid #22c55e;
+    padding: 18px;
+    border-radius: 10px;
+    margin: 10px 0;
+    color: #111827;
 }
 
-
-/* Ensure lower-page content remains visible on light backgrounds */
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] li,
-[data-testid="stMarkdownContainer"] strong,
-[data-testid="stMarkdownContainer"] h1,
-[data-testid="stMarkdownContainer"] h2,
-[data-testid="stMarkdownContainer"] h3,
-[data-testid="stMarkdownContainer"] h4 {
-    color: #111827 !important;
+.danger-box {
+    background-color: #fef2f2;
+    border-left: 5px solid #ef4444;
+    padding: 18px;
+    border-radius: 10px;
+    margin: 10px 0;
+    color: #111827;
 }
 
 .footer {
     background-color: #ffffff;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    color: #374151 !important;
-    padding: 22px 15px 18px 15px;
+    border-radius: 14px;
+    padding: 20px;
     margin-top: 30px;
-}
-
-.footer br + * {
-    color: #374151 !important;
-}
-
-
-/* Global visibility fix */
-.stApp, .main, .block-container {
-    background-color: #f8fafc !important;
-}
-
-[data-testid="stMarkdownContainer"] {
-    color: #111827 !important;
-}
-
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] li,
-[data-testid="stMarkdownContainer"] span,
-[data-testid="stMarkdownContainer"] strong,
-[data-testid="stMarkdownContainer"] em {
-    color: #111827 !important;
-}
-
-[data-testid="stMarkdownContainer"] h1,
-[data-testid="stMarkdownContainer"] h2,
-[data-testid="stMarkdownContainer"] h3,
-[data-testid="stMarkdownContainer"] h4,
-[data-testid="stMarkdownContainer"] h5,
-[data-testid="stMarkdownContainer"] h6 {
-    color: #111827 !important;
-}
-
-.stTextInput label,
-.stTextArea label,
-.stSelectbox label,
-.stRadio label,
-.stButton label {
-    color: #111827 !important;
-}
-
-div[data-testid="stMetric"] {
-    background-color: #ffffff !important;
-    border: 1px solid #dbe3ef !important;
-    border-radius: 14px !important;
-}
-
-div[data-testid="stMetric"] * {
-    color: #111827 !important;
-}
-
-div[data-testid="stDataFrame"] {
-    color: #111827 !important;
-}
-
-.stAlert {
-    color: #111827 !important;
-}
-
-footer {
-    visibility: hidden;
-}
-
-.footer {
-    background-color: #ffffff !important;
-    border: 1px solid #dbe3ef !important;
-    border-radius: 14px !important;
-    color: #374151 !important;
-    padding: 22px !important;
-    margin-top: 30px !important;
-    text-align: center !important;
-}
-
-.footer * {
-    color: #374151 !important;
-}
-
-
-/* Sidebar visibility */
-section[data-testid="stSidebar"] {
-    background-color: #111827 !important;
-}
-
-section[data-testid="stSidebar"] * {
-    color: #ffffff !important;
-}
-
-section[data-testid="stSidebar"] .stMarkdown p,
-section[data-testid="stSidebar"] .stMarkdown span {
-    color: #ffffff !important;
-}
-
-section[data-testid="stSidebar"] hr {
-    border-color: #374151 !important;
-}
-
-
-/* Prevent lower content from being visually clipped */
-.main .block-container {
-    min-height: auto !important;
-    overflow: visible !important;
-    padding-bottom: 5rem !important;
+    text-align: center;
+    color: #4b5563;
 }
 
 </style>
@@ -231,51 +164,48 @@ section[data-testid="stSidebar"] hr {
 
 
 # ============================================================
-# LOAD MODEL
+# LOAD MODEL FILES
 # ============================================================
+
+MODEL_FILE = "fake_news_model.pkl"
+VECTORIZER_FILE = "tfidf_vectorizer.pkl"
+METRICS_FILE = "model_metrics.pkl"
+
 
 @st.cache_resource
 def load_model():
-
-    model = joblib.load("fake_news_model.pkl")
-    vectorizer = joblib.load("tfidf_vectorizer.pkl")
-    metrics = joblib.load("model_metrics.pkl")
-
-    return model, vectorizer, metrics
+    return joblib.load(MODEL_FILE)
 
 
-model, vectorizer, metrics = load_model()
+@st.cache_resource
+def load_vectorizer():
+    return joblib.load(VECTORIZER_FILE)
+
+
+@st.cache_data
+def load_metrics():
+    return joblib.load(METRICS_FILE)
+
+
+model = load_model()
+vectorizer = load_vectorizer()
+metrics = load_metrics()
 
 
 # ============================================================
-# SAFE METRIC FUNCTION
+# SAFE METRIC HELPER
 # ============================================================
 
 def get_metric(metrics_dict, *possible_names):
-
     for name in possible_names:
-
         if name in metrics_dict:
             return metrics_dict[name]
-
     return 0
 
 
-accuracy = get_metric(
-    metrics,
-    "accuracy"
-)
-
-precision = get_metric(
-    metrics,
-    "precision"
-)
-
-recall = get_metric(
-    metrics,
-    "recall"
-)
-
+accuracy = get_metric(metrics, "accuracy")
+precision = get_metric(metrics, "precision")
+recall = get_metric(metrics, "recall")
 f1 = get_metric(
     metrics,
     "f1",
@@ -287,42 +217,27 @@ f1 = get_metric(
 # ============================================================
 # DATASET STATISTICS
 # ============================================================
-# The original training dataset is kept offline because the CSV files
-# are too large for a simple GitHub browser upload. The deployed app
-# only needs the trained model/vectorizer/metrics files for prediction.
 
 total_articles = 44898
 fake_articles = 23481
 real_articles = 21417
 
-# Original training used an 80/20 split
 training_size = 35918
 testing_size = 8980
 
 
 # ============================================================
-# PREDICTION FUNCTION
+# CONFUSION MATRIX
 # ============================================================
 
-def predict_news(text):
-
-    text_vector = vectorizer.transform([text])
-
-    prediction = model.predict(text_vector)[0]
-
-    probabilities = model.predict_proba(
-        text_vector
-    )[0]
-
-    return (
-        prediction,
-        probabilities,
-        text_vector
-    )
+confusion_matrix_values = [
+    [4619, 77],
+    [46, 4238]
+]
 
 
 # ============================================================
-# EXPLAINABILITY FUNCTION
+# XAI FUNCTION
 # ============================================================
 
 def get_explanation(
@@ -389,13 +304,35 @@ def get_explanation(
 # SIDEBAR
 # ============================================================
 
-st.sidebar.title("📰 TruthLens")
+st.sidebar.markdown("""
+<div style="
+    padding: 10px 0 25px 0;
+    text-align: center;
+">
+    <div style="
+        font-size:28px;
+        font-weight:800;
+        color:#ffffff;
+        letter-spacing:0.5px;
+    ">
+        TruthLens
+    </div>
 
-st.sidebar.markdown(
-    "### AI-Powered Fake News Detection"
-)
+    <div style="
+        font-size:11px;
+        color:#9ca3af;
+        margin-top:6px;
+        letter-spacing:1.2px;
+        font-weight:600;
+    ">
+        AI-POWERED NEWS ANALYSIS
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 
 st.sidebar.markdown("---")
+
 
 page = st.sidebar.radio(
     "Navigation",
@@ -408,12 +345,24 @@ page = st.sidebar.radio(
     ]
 )
 
+
 st.sidebar.markdown("---")
 
-st.sidebar.info(
-    "TruthLens uses Machine Learning and "
-    "Natural Language Processing to classify "
-    "news articles as REAL or FAKE."
+
+st.sidebar.markdown(
+    """
+    <div style="
+        text-align:center;
+        color:#9ca3af;
+        font-size:12px;
+        line-height:1.6;
+    ">
+        <b>TruthLens</b><br>
+        AI-Powered Fake News Detection<br>
+        & Explainable Analysis
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 
@@ -423,47 +372,75 @@ st.sidebar.info(
 
 if page == "🏠 Dashboard":
 
-    st.markdown(
-        '<div class="main-title">📰 TruthLens</div>',
-        unsafe_allow_html=True
+    st.title("🔎 TruthLens")
+
+    st.subheader(
+        "AI-Powered Fake News Detection & Explainable Analysis"
     )
 
     st.markdown(
-        '<div class="subtitle">'
-        'AI-Powered Fake News Detection Dashboard'
-        '</div>',
-        unsafe_allow_html=True
+        """
+        TruthLens uses machine learning and Natural Language Processing
+        to analyze news articles and estimate whether they are likely to
+        be **FAKE** or **REAL**.
+        """
     )
 
-    # ========================================================
-    # KPI CARDS
-    # ========================================================
+    st.markdown("---")
+
+    st.subheader("📊 Dataset Overview")
 
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-
         st.metric(
-            "Model Accuracy",
+            "Total Articles",
+            f"{total_articles:,}"
+        )
+
+    with col2:
+        st.metric(
+            "Fake Articles",
+            f"{fake_articles:,}"
+        )
+
+    with col3:
+        st.metric(
+            "Real Articles",
+            f"{real_articles:,}"
+        )
+
+    with col4:
+        st.metric(
+            "Training Articles",
+            f"{training_size:,}"
+        )
+
+    st.markdown("---")
+
+    st.subheader("🤖 Model Performance")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
+            "Accuracy",
             f"{accuracy * 100:.2f}%"
         )
 
     with col2:
-
         st.metric(
             "Precision",
             f"{precision * 100:.2f}%"
         )
 
     with col3:
-
         st.metric(
             "Recall",
             f"{recall * 100:.2f}%"
         )
 
     with col4:
-
         st.metric(
             "F1 Score",
             f"{f1 * 100:.2f}%"
@@ -471,316 +448,55 @@ if page == "🏠 Dashboard":
 
     st.markdown("---")
 
-    # ========================================================
-    # NEWS ANALYZER
-    # ========================================================
+    st.subheader("⚡ How TruthLens Works")
 
-    st.markdown(
-        '<div class="section-title">'
-        '🔍 Analyze a News Article'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    col1, col2, col3 = st.columns(3)
 
-    news_text = st.text_area(
-        "Paste the news article below:",
-        height=220,
-        placeholder=(
-            "Paste a complete news article here "
-            "and click Analyze News..."
+    with col1:
+
+        st.markdown(
+            """
+            ### 1️⃣ Input
+
+            Enter or paste a news article into the
+            **News Analyzer**.
+            """
         )
-    )
 
-    analyze_button = st.button(
-        "🔎 Analyze News",
-        type="primary",
-        use_container_width=True
-    )
+    with col2:
 
-    if analyze_button:
+        st.markdown(
+            """
+            ### 2️⃣ AI Analysis
 
-        if not news_text.strip():
+            TF-IDF converts the article into numerical
+            features and the trained Logistic Regression
+            model analyzes the text.
+            """
+        )
 
-            st.warning(
-                "Please enter some news text before analyzing."
-            )
+    with col3:
 
-        else:
+        st.markdown(
+            """
+            ### 3️⃣ Explanation
 
-            prediction, probabilities, text_vector = predict_news(
-                news_text
-            )
-
-            fake_probability = probabilities[0]
-            real_probability = probabilities[1]
-
-            if prediction == "REAL":
-
-                st.markdown(
-                    """
-                    <div class="result-real">
-                        <div class="result-title">
-                            ✅ REAL NEWS
-                        </div>
-                        <div class="result-subtitle">
-                            The model classified this article
-                            as likely REAL.
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-            else:
-
-                st.markdown(
-                    """
-                    <div class="result-fake">
-                        <div class="result-title">
-                            ⚠️ FAKE NEWS
-                        </div>
-                        <div class="result-subtitle">
-                            The model classified this article
-                            as likely FAKE.
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-            st.markdown("### 📊 Prediction Probability")
-
-            prob_df = pd.DataFrame({
-                "Class": [
-                    "FAKE",
-                    "REAL"
-                ],
-                "Probability": [
-                    fake_probability,
-                    real_probability
-                ]
-            })
-
-            fig = px.bar(
-                prob_df,
-                x="Class",
-                y="Probability",
-                text_auto=".2%",
-                range_y=[0, 1],
-                title="Model Confidence"
-            )
-
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
-
-            # =================================================
-            # ARTICLE STATISTICS
-            # =================================================
-
-            st.markdown("### 📝 Article Statistics")
-
-            word_count = len(
-                news_text.split()
-            )
-
-            character_count = len(
-                news_text
-            )
-
-            sentence_count = max(
-                1,
-                len([
-                    x for x in news_text.split(".")
-                    if x.strip()
-                ])
-            )
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-
-                st.metric(
-                    "Words",
-                    word_count
-                )
-
-            with col2:
-
-                st.metric(
-                    "Characters",
-                    character_count
-                )
-
-            with col3:
-
-                st.metric(
-                    "Sentences",
-                    sentence_count
-                )
-
-            # =================================================
-            # CONFIDENCE
-            # =================================================
-
-            confidence = max(
-                fake_probability,
-                real_probability
-            )
-
-            st.markdown("### 🎯 Confidence")
-
-            st.progress(
-                float(confidence)
-            )
-
-            st.write(
-                f"Model confidence: "
-                f"**{confidence * 100:.2f}%**"
-            )
-
-            if confidence >= 0.90:
-
-                st.success(
-                    "The model has high confidence in this prediction."
-                )
-
-            elif confidence >= 0.70:
-
-                st.warning(
-                    "The model has moderate confidence in this prediction."
-                )
-
-            else:
-
-                st.info(
-                    "The model has relatively low confidence. "
-                    "Consider reviewing the article manually."
-                )
-
-            # =================================================
-            # EXPLAINABLE AI
-            # =================================================
-
-            st.markdown("---")
-
-            st.markdown(
-                "### 🧠 Why did the model make this prediction?"
-            )
-
-            supporting, opposing = get_explanation(
-                text_vector,
-                model,
-                vectorizer,
-                prediction
-            )
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-
-                st.markdown(
-                    "#### 🔑 Supporting Signals"
-                )
-
-                if not supporting.empty:
-
-                    support_chart = px.bar(
-                        supporting.sort_values(
-                            "Contribution"
-                        ),
-                        x="Contribution",
-                        y="Word",
-                        orientation="h",
-                        title="Words supporting prediction"
-                    )
-
-                    st.plotly_chart(
-                        support_chart,
-                        use_container_width=True
-                    )
-
-                else:
-
-                    st.info(
-                        "No significant supporting words found."
-                    )
-
-            with col2:
-
-                st.markdown(
-                    "#### ⚖️ Opposing Signals"
-                )
-
-                if not opposing.empty:
-
-                    opposing_chart = px.bar(
-                        opposing.sort_values(
-                            "Contribution"
-                        ),
-                        x="Contribution",
-                        y="Word",
-                        orientation="h",
-                        title="Words opposing prediction"
-                    )
-
-                    st.plotly_chart(
-                        opposing_chart,
-                        use_container_width=True
-                    )
-
-                else:
-
-                    st.info(
-                        "No significant opposing words found."
-                    )
-
-            st.markdown(
-                """
-                <div class="warning-box">
-                <b>Important:</b> These words are model feature
-                signals, not proof that an article is true or false.
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-    # ========================================================
-    # DISCLAIMER
-    # ========================================================
+            TruthLens displays the prediction,
+            confidence, probability and important words
+            influencing the result.
+            """
+        )
 
     st.markdown("---")
 
     st.markdown(
         """
-        <div style="
-            background:#e0f2fe;
-            border:1px solid #93c5fd;
-            border-left:6px solid #2563eb;
-            border-radius:14px;
-            padding:20px 22px;
-            margin:20px 0;
-            color:#111827;
-        ">
-            <div style="
-                font-size:18px;
-                font-weight:800;
-                color:#111827;
-                margin-bottom:8px;
-            ">
-                ⚠️ Disclaimer
-            </div>
-            <div style="
-                font-size:15px;
-                line-height:1.65;
-                color:#374151;
-            ">
-                TruthLens is an educational machine learning project.
-                Predictions are based on patterns learned from the
-                training dataset and should not be treated as definitive
-                fact-checking.
-            </div>
+        <div class="warning-box">
+        <b>⚠️ Important:</b><br>
+        TruthLens is a machine-learning demonstration project.
+        A prediction of REAL does not prove that an article is
+        factually true, and a prediction of FAKE does not by itself
+        establish that an article is false.
         </div>
         """,
         unsafe_allow_html=True
@@ -793,100 +509,227 @@ if page == "🏠 Dashboard":
 
 elif page == "🔍 News Analyzer":
 
-    st.markdown(
-        '<div class="main-title">🔍 News Analyzer</div>',
-        unsafe_allow_html=True
+    st.title("🔍 News Analyzer")
+
+    st.write(
+        "Paste a news article below to analyze it using the trained AI model."
     )
 
-    st.markdown(
-        '<div class="subtitle">'
-        'Analyze individual news articles using the trained ML model.'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    news_text = st.text_area(
+    article_text = st.text_area(
         "Enter News Article",
-        height=300,
-        placeholder="Paste news article text here..."
+        height=280,
+        placeholder=(
+            "Paste the full news article here..."
+        )
     )
 
-    if st.button(
-        "Analyze Article",
-        type="primary"
-    ):
+    analyze_button = st.button(
+        "🔎 Analyze Article",
+        use_container_width=True
+    )
 
-        if not news_text.strip():
+    if analyze_button:
+
+        if not article_text.strip():
 
             st.warning(
-                "Please enter some text."
+                "Please enter a news article before analyzing."
             )
 
         else:
 
-            prediction, probabilities, text_vector = predict_news(
-                news_text
+            # ------------------------------------------------
+            # TEXT VECTOR
+            # ------------------------------------------------
+
+            text_vector = vectorizer.transform(
+                [article_text]
             )
 
-            fake_probability = probabilities[0]
-            real_probability = probabilities[1]
+            # ------------------------------------------------
+            # PREDICTION
+            # ------------------------------------------------
 
-            if prediction == "REAL":
+            prediction = model.predict(
+                text_vector
+            )[0]
 
-                st.success(
-                    "✅ Prediction: REAL NEWS"
+            probabilities = model.predict_proba(
+                text_vector
+            )[0]
+
+            classes = model.classes_
+
+            probability_dict = {
+                classes[i]: probabilities[i]
+                for i in range(len(classes))
+            }
+
+            fake_probability = probability_dict.get(
+                "FAKE",
+                0
+            )
+
+            real_probability = probability_dict.get(
+                "REAL",
+                0
+            )
+
+            confidence = max(
+                fake_probability,
+                real_probability
+            )
+
+            # ------------------------------------------------
+            # RESULT
+            # ------------------------------------------------
+
+            st.markdown("---")
+
+            st.subheader("🎯 Prediction Result")
+
+            if prediction == "FAKE":
+
+                st.markdown(
+                    f"""
+                    <div class="danger-box">
+                    <h2>🚨 FAKE NEWS</h2>
+                    <p>
+                    The model classified this article as
+                    <b>FAKE</b>.
+                    </p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
 
             else:
 
-                st.error(
-                    "⚠️ Prediction: FAKE NEWS"
+                st.markdown(
+                    f"""
+                    <div class="success-box">
+                    <h2>✅ REAL NEWS</h2>
+                    <p>
+                    The model classified this article as
+                    <b>REAL</b>.
+                    </p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
+
+            # ------------------------------------------------
+            # CONFIDENCE
+            # ------------------------------------------------
+
+            st.subheader("📊 Prediction Confidence")
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+
+                st.metric(
+                    "Prediction",
+                    prediction
+                )
+
+            with col2:
+
+                st.metric(
+                    "Confidence",
+                    f"{confidence * 100:.2f}%"
+                )
+
+            with col3:
+
+                st.metric(
+                    "Article Words",
+                    f"{len(article_text.split()):,}"
+                )
+
+            # ------------------------------------------------
+            # PROBABILITIES
+            # ------------------------------------------------
+
+            st.markdown("---")
+
+            st.subheader("📈 Prediction Probabilities")
 
             col1, col2 = st.columns(2)
 
             with col1:
 
                 st.metric(
-                    "Fake Probability",
+                    "FAKE Probability",
                     f"{fake_probability * 100:.2f}%"
+                )
+
+                st.progress(
+                    float(fake_probability)
                 )
 
             with col2:
 
                 st.metric(
-                    "Real Probability",
+                    "REAL Probability",
                     f"{real_probability * 100:.2f}%"
                 )
 
-            probability_df = pd.DataFrame({
-                "Class": [
-                    "FAKE",
-                    "REAL"
-                ],
-                "Probability": [
-                    fake_probability,
-                    real_probability
-                ]
-            })
+                st.progress(
+                    float(real_probability)
+                )
 
-            fig = px.pie(
-                probability_df,
-                names="Class",
-                values="Probability",
-                hole=0.4,
-                title="Prediction Probability"
-            )
+            # ------------------------------------------------
+            # ARTICLE STATISTICS
+            # ------------------------------------------------
 
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
+            st.markdown("---")
+
+            st.subheader("📝 Article Statistics")
+
+            words = article_text.split()
+
+            sentences = [
+                s for s in article_text.split(".")
+                if s.strip()
+            ]
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+
+                st.metric(
+                    "Words",
+                    f"{len(words):,}"
+                )
+
+            with col2:
+
+                st.metric(
+                    "Characters",
+                    f"{len(article_text):,}"
+                )
+
+            with col3:
+
+                st.metric(
+                    "Sentences",
+                    f"{len(sentences):,}"
+                )
+
+            # ------------------------------------------------
+            # EXPLAINABLE AI
+            # ------------------------------------------------
 
             st.markdown("---")
 
             st.subheader(
                 "🧠 Explainable AI"
+            )
+
+            st.write(
+                "The following words contributed most strongly "
+                "to the model's prediction."
             )
 
             supporting, opposing = get_explanation(
@@ -901,62 +744,71 @@ elif page == "🔍 News Analyzer":
             with col1:
 
                 st.markdown(
-                    "#### 🔑 Supporting Words"
+                    "### 🔵 Supporting Words"
                 )
 
-                if not supporting.empty:
+                if len(supporting) > 0:
 
-                    fig_support = px.bar(
-                        supporting.sort_values(
-                            "Contribution"
-                        ),
-                        x="Contribution",
-                        y="Word",
-                        orientation="h"
-                    )
+                    display_supporting = supporting.copy()
 
-                    st.plotly_chart(
-                        fig_support,
-                        use_container_width=True
+                    display_supporting[
+                        "Contribution"
+                    ] = display_supporting[
+                        "Contribution"
+                    ].round(4)
+
+                    st.dataframe(
+                        display_supporting,
+                        use_container_width=True,
+                        hide_index=True
                     )
 
                 else:
 
                     st.info(
-                        "No strong supporting signals found."
+                        "No strong supporting words were found."
                     )
 
             with col2:
 
                 st.markdown(
-                    "#### ⚖️ Opposing Words"
+                    "### 🟠 Opposing Words"
                 )
 
-                if not opposing.empty:
+                if len(opposing) > 0:
 
-                    fig_opposing = px.bar(
-                        opposing.sort_values(
-                            "Contribution"
-                        ),
-                        x="Contribution",
-                        y="Word",
-                        orientation="h"
-                    )
+                    display_opposing = opposing.copy()
 
-                    st.plotly_chart(
-                        fig_opposing,
-                        use_container_width=True
+                    display_opposing[
+                        "Contribution"
+                    ] = display_opposing[
+                        "Contribution"
+                    ].round(4)
+
+                    st.dataframe(
+                        display_opposing,
+                        use_container_width=True,
+                        hide_index=True
                     )
 
                 else:
 
                     st.info(
-                        "No strong opposing signals found."
+                        "No strong opposing words were found."
                     )
 
-            st.info(
-                "The highlighted words represent model feature "
-                "signals and should not be interpreted as factual proof."
+            st.markdown("---")
+
+            st.markdown(
+                """
+                <div class="warning-box">
+                <b>⚠️ Interpretation:</b><br>
+                The highlighted words show which terms influenced
+                the machine-learning model. They are not independent
+                evidence that the article is true or false.
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
 
@@ -966,17 +818,15 @@ elif page == "🔍 News Analyzer":
 
 elif page == "📈 Dataset Analytics":
 
-    st.markdown(
-        '<div class="main-title">📈 Dataset Analytics</div>',
-        unsafe_allow_html=True
+    st.title("📈 Dataset Analytics")
+
+    st.write(
+        "Overview of the dataset used to train and evaluate the model."
     )
 
-    st.markdown(
-        '<div class="subtitle">'
-        'Explore statistics from the dataset used to train the model.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("---")
+
+    st.subheader("📊 Dataset Distribution")
 
     col1, col2, col3 = st.columns(3)
 
@@ -990,73 +840,43 @@ elif page == "📈 Dataset Analytics":
     with col2:
 
         st.metric(
-            "Fake Articles",
+            "FAKE Articles",
             f"{fake_articles:,}"
         )
 
     with col3:
 
         st.metric(
-            "Real Articles",
+            "REAL Articles",
             f"{real_articles:,}"
         )
 
     st.markdown("---")
 
-    st.subheader(
-        "📊 Class Distribution"
-    )
+    # Dataset distribution table
 
-    class_df = pd.DataFrame({
-        "Label": [
+    distribution_df = pd.DataFrame({
+        "Category": [
             "FAKE",
             "REAL"
         ],
-        "Count": [
+        "Articles": [
             fake_articles,
             real_articles
         ]
     })
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        fig = px.pie(
-            class_df,
-            names="Label",
-            values="Count",
-            hole=0.4,
-            title="Fake vs Real Articles"
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-    with col2:
-
-        fig = px.bar(
-            class_df,
-            x="Label",
-            y="Count",
-            text_auto=True,
-            title="Article Count by Class"
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+    st.dataframe(
+        distribution_df,
+        use_container_width=True,
+        hide_index=True
+    )
 
     st.markdown("---")
 
-    st.subheader(
-        "🧪 Training and Testing Dataset"
-    )
+    st.subheader("🧪 Training vs Testing Data")
 
-    split_df = pd.DataFrame({
+    train_test_df = pd.DataFrame({
         "Dataset": [
             "Training",
             "Testing"
@@ -1064,55 +884,42 @@ elif page == "📈 Dataset Analytics":
         "Articles": [
             training_size,
             testing_size
-        ]
-    })
-
-    fig = px.bar(
-        split_df,
-        x="Dataset",
-        y="Articles",
-        text_auto=True,
-        title="80/20 Train-Test Split"
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
-    st.markdown("---")
-
-    st.subheader(
-        "👀 Dataset Preview"
-    )
-
-    st.info(
-        "The full CSV dataset is kept offline and is not bundled with "
-        "the deployed Streamlit app. The statistics above come from "
-        "the dataset used during model training."
-    )
-
-    preview_df = pd.DataFrame({
-        "Dataset Information": [
-            "Total articles",
-            "Fake articles",
-            "Real articles",
-            "Training articles",
-            "Testing articles"
         ],
-        "Value": [
-            f"{total_articles:,}",
-            f"{fake_articles:,}",
-            f"{real_articles:,}",
-            f"{training_size:,}",
-            f"{testing_size:,}"
+        "Percentage": [
+            f"{training_size / total_articles * 100:.2f}%",
+            f"{testing_size / total_articles * 100:.2f}%"
         ]
     })
 
     st.dataframe(
-        preview_df,
+        train_test_df,
         use_container_width=True,
         hide_index=True
+    )
+
+    st.markdown("---")
+
+    st.subheader("📌 Dataset Information")
+
+    st.markdown(
+        """
+        <div class="info-box">
+
+        <b>Dataset size:</b> 44,898 articles<br><br>
+
+        <b>Fake articles:</b> 23,481<br><br>
+
+        <b>Real articles:</b> 21,417<br><br>
+
+        <b>Training data:</b> 35,918 articles<br><br>
+
+        <b>Testing data:</b> 8,980 articles<br><br>
+
+        <b>Train/Test split:</b> 80% / 20%
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 
@@ -1122,25 +929,44 @@ elif page == "📈 Dataset Analytics":
 
 elif page == "📊 Model Information":
 
-    st.markdown(
-        '<div class="main-title">📊 Model Information</div>',
-        unsafe_allow_html=True
+    st.title("📊 Model Information")
+
+    st.write(
+        "Technical information about the machine-learning model."
     )
 
-    st.markdown(
-        '<div class="subtitle">'
-        'Machine learning model performance and technical details.'
-        '</div>',
-        unsafe_allow_html=True
+    st.markdown("---")
+
+    st.subheader("🤖 Machine Learning Model")
+
+    model_info = pd.DataFrame({
+        "Component": [
+            "Algorithm",
+            "Feature Extraction",
+            "Vectorizer",
+            "Maximum Features",
+            "Training Articles",
+            "Testing Articles"
+        ],
+        "Value": [
+            "Logistic Regression",
+            "TF-IDF",
+            "TfidfVectorizer",
+            "50,000",
+            f"{training_size:,}",
+            f"{testing_size:,}"
+        ]
+    })
+
+    st.dataframe(
+        model_info,
+        use_container_width=True,
+        hide_index=True
     )
 
-    # ========================================================
-    # PERFORMANCE METRICS
-    # ========================================================
+    st.markdown("---")
 
-    st.subheader(
-        "🎯 Model Performance"
-    )
+    st.subheader("📈 Model Performance")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -1172,217 +998,68 @@ elif page == "📊 Model Information":
             f"{f1 * 100:.2f}%"
         )
 
-    # ========================================================
-    # PERFORMANCE CHART
-    # ========================================================
-
     st.markdown("---")
 
-    st.subheader(
-        "📊 Performance Comparison"
-    )
+    st.subheader("🔢 Confusion Matrix")
 
-    performance_df = pd.DataFrame({
-        "Metric": [
-            "Accuracy",
-            "Precision",
-            "Recall",
-            "F1 Score"
+    cm_df = pd.DataFrame(
+        confusion_matrix_values,
+        index=[
+            "Actual FAKE",
+            "Actual REAL"
         ],
-        "Score": [
-            accuracy,
-            precision,
-            recall,
-            f1
+        columns=[
+            "Predicted FAKE",
+            "Predicted REAL"
         ]
-    })
-
-    fig = px.bar(
-        performance_df,
-        x="Metric",
-        y="Score",
-        text_auto=".2%",
-        range_y=[0, 1],
-        title="Model Performance Metrics"
     )
 
-    st.plotly_chart(
-        fig,
+    st.dataframe(
+        cm_df,
         use_container_width=True
     )
 
-    # ========================================================
-    # CONFUSION MATRIX
-    # ========================================================
+    st.markdown("---")
+
+    st.subheader("📚 Metric Explanation")
+
+    st.markdown(
+        """
+        **Accuracy**  
+        Measures the proportion of all predictions that were correct.
+
+        **Precision**  
+        Measures how many articles predicted as a particular class
+        actually belonged to that class.
+
+        **Recall**  
+        Measures how many articles belonging to a class were
+        successfully identified.
+
+        **F1 Score**  
+        Combines precision and recall into a single metric.
+        """
+    )
 
     st.markdown("---")
 
-    st.subheader(
-        "🔢 Confusion Matrix"
-    )
-
-    confusion_matrix = metrics.get(
-        "confusion_matrix",
-        None
-    )
-
-    if confusion_matrix is not None:
-
-        cm = pd.DataFrame(
-            confusion_matrix,
-            index=[
-                "Actual FAKE",
-                "Actual REAL"
-            ],
-            columns=[
-                "Predicted FAKE",
-                "Predicted REAL"
-            ]
-        )
-
-        st.dataframe(
-            cm,
-            use_container_width=True
-        )
-
-        st.markdown(
-            """
-            **How to read the matrix:**
-
-            - **Actual FAKE → Predicted FAKE:** Correctly identified fake news
-            - **Actual FAKE → Predicted REAL:** Fake news classified as real
-            - **Actual REAL → Predicted FAKE:** Real news classified as fake
-            - **Actual REAL → Predicted REAL:** Correctly identified real news
-            """
-        )
-
-    else:
-
-        st.info(
-            "Confusion matrix data was not saved in the model metrics file."
-        )
-
-    # ========================================================
-    # TRAINING / TESTING
-    # ========================================================
-
-    st.markdown("---")
-
-    st.subheader(
-        "🧪 Training vs Testing Data"
-    )
-
-    split_df = pd.DataFrame({
-        "Dataset": [
-            "Training",
-            "Testing"
-        ],
-        "Articles": [
-            training_size,
-            testing_size
-        ]
-    })
+    st.subheader("🧪 Training vs Testing Data")
 
     col1, col2 = st.columns(2)
 
     with col1:
-
-        fig = px.pie(
-            split_df,
-            names="Dataset",
-            values="Articles",
-            hole=0.4,
-            title="Training / Testing Distribution"
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-    with col2:
 
         st.metric(
             "Training Articles",
             f"{training_size:,}"
         )
 
+    with col2:
+
         st.metric(
             "Testing Articles",
             f"{testing_size:,}"
         )
-
-    # ========================================================
-    # ALGORITHM
-    # ========================================================
-
-    st.markdown("---")
-
-    st.subheader(
-        "🤖 Machine Learning Algorithm"
-    )
-
-    st.markdown(
-        """
-        **Algorithm: Logistic Regression**
-
-        Logistic Regression is a supervised machine learning
-        algorithm used for classification problems.
-
-        In TruthLens, it classifies news articles into:
-
-        - 🟢 REAL
-        - 🔴 FAKE
-        """
-    )
-
-    # ========================================================
-    # TF-IDF
-    # ========================================================
-
-    st.subheader(
-        "📝 Text Representation"
-    )
-
-    st.markdown(
-        """
-        **TF-IDF — Term Frequency-Inverse Document Frequency**
-
-        TF-IDF converts text into numerical features that the
-        machine learning model can understand.
-
-        The vectorizer used in this project includes:
-
-        - Lowercase conversion
-        - English stop-word removal
-        - Maximum 50,000 features
-        """
-    )
-
-    # ========================================================
-    # PIPELINE
-    # ========================================================
-
-    st.subheader(
-        "⚙️ Machine Learning Pipeline"
-    )
-
-    st.code(
-        """
-News Article
-     ↓
-Text Cleaning
-     ↓
-TF-IDF Vectorization
-     ↓
-Logistic Regression
-     ↓
-Prediction
-     ↓
-REAL / FAKE
-        """,
-        language="text"
-    )
 
 
 # ============================================================
@@ -1391,55 +1068,74 @@ REAL / FAKE
 
 elif page == "ℹ️ About Project":
 
-    st.markdown(
-        '<div class="main-title">ℹ️ About TruthLens</div>',
-        unsafe_allow_html=True
+    st.title("ℹ️ About TruthLens")
+
+    st.subheader(
+        "AI-Powered Fake News Detection & Explainable Analysis"
     )
 
-    st.markdown(
-        '<div class="subtitle">'
-        'An AI-powered fake news detection project.'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown("---")
 
     st.markdown(
         """
         ### 🎯 Project Objective
 
-        TruthLens is a machine learning based application
-        designed to classify news articles as REAL or FAKE.
+        TruthLens is a machine-learning based application designed
+        to analyze news text and classify it as either **FAKE** or
+        **REAL** based on patterns learned from a labeled dataset.
+        """
+    )
 
-        The project demonstrates how Natural Language Processing
-        and Machine Learning can be combined with an interactive
-        Streamlit dashboard.
-
+    st.markdown(
+        """
         ### 🧠 Technologies Used
 
         - Python
+        - Streamlit
         - Pandas
         - Scikit-learn
         - TF-IDF
         - Logistic Regression
-        - Streamlit
-        - Plotly
         - Joblib
+        """
+    )
 
-        ### 🔬 Key Features
+    st.markdown(
+        """
+        ### 🔬 Explainable AI
 
-        - News classification
-        - Prediction probabilities
-        - Explainable AI
-        - Dataset analytics
-        - Model performance metrics
-        - Confusion matrix
-        - Interactive visualizations
+        TruthLens does not only provide a prediction.
 
-        ### 📌 Important Limitation
+        It also identifies words that contributed to the model's
+        classification. This provides a basic form of explainable
+        artificial intelligence and helps users understand how the
+        model reached its prediction.
+        """
+    )
 
-        The model learns patterns from its training dataset.
-        Therefore, a prediction is not equivalent to independent
-        journalistic fact-checking or verification of an article.
+    st.markdown(
+        """
+        ### 📊 Model
+
+        The application uses:
+
+        **TF-IDF → Logistic Regression**
+
+        TF-IDF converts text into numerical features, while Logistic
+        Regression uses those features to classify the article.
+        """
+    )
+
+    st.markdown(
+        """
+        ### ⚠️ Disclaimer
+
+        TruthLens is an educational machine-learning project.
+
+        Its predictions should not be treated as definitive proof
+        that a news article is true or false. Users should verify
+        important information using reliable sources and professional
+        fact-checking resources.
         """
     )
 
@@ -1447,47 +1143,38 @@ elif page == "ℹ️ About Project":
 
     st.markdown(
         """
-        <div style="
-            background:#ffffff;
-            border:1px solid #dbe3ef;
-            border-left:6px solid #2563eb;
-            border-radius:14px;
-            padding:22px 24px;
-            margin-top:20px;
-            color:#111827;
-        ">
-            <div style="
-                font-size:22px;
-                font-weight:800;
-                color:#111827;
-                margin-bottom:8px;
-            ">
-                TruthLens
-            </div>
-            <div style="
-                font-size:15px;
-                color:#374151;
-                line-height:1.6;
-            ">
-                AI-Powered Fake News Detection Dashboard
-            </div>
+        <div class="footer">
+
+        <b>TruthLens</b><br>
+
+        AI-Powered News Analysis<br><br>
+
+        Built with Python, Streamlit & Machine Learning
+
         </div>
         """,
         unsafe_allow_html=True
     )
+Your GitHub files should be
+TruthLens
+│
+├── app.py
+├── fake_news_model.pkl
+├── tfidf_vectorizer.pkl
+├── model_metrics.pkl
+└── requirements.txt
 
+And your requirements.txt should contain:
 
-# ============================================================
-# FOOTER
-# ============================================================
+streamlit
+pandas
+scikit-learn
+joblib
+plotly
 
-st.markdown(
-    """
-    <div class="footer">
-        TruthLens • AI-Powered Fake News Detection<br>
-        Built with Python, Machine Learning & Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+Important: this version deliberately does not require the dataset folder for the deployed app. That is what prevents the FileNotFoundError you encountered on Streamlit Cloud.
 
+Chat memory full
+Start a new chat with an automatic summary of this conversation, or upgrade to continue here with expanded memory in every chat.
+Continue in a new chat
+Upgrade to Go
